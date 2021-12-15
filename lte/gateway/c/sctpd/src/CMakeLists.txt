@@ -35,6 +35,8 @@ generate_grpc_protos("${SCTPD_GRPC_PROTOS}" "${PROTO_SRCS}"
     "${PROTO_HDRS}" ${LTE_PROTO_DIR} ${LTE_CPP_OUT_DIR})
 
 find_package(MAGMA_LOGGING REQUIRED)
+find_package(MAGMA_SENTRY REQUIRED)
+find_package(MAGMA_CONFIG REQUIRED)
 
 add_library(SCTPD_LIB
     sctp_assoc.cpp
@@ -50,8 +52,8 @@ add_library(SCTPD_LIB
 
 target_compile_definitions(SCTPD_LIB PUBLIC LOG_WITH_GLOG)
 
-target_link_libraries(SCTPD_LIB
-    sctp pthread grpc++ grpc protobuf glog MAGMA_LOGGING
+target_link_libraries(SCTPD_LIB MAGMA_LOGGING MAGMA_CONFIG MAGMA_SENTRY
+    sctp pthread grpc++ grpc protobuf glog yaml-cpp
     )
 
 target_include_directories(SCTPD_LIB PUBLIC

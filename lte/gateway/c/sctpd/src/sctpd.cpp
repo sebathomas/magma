@@ -13,6 +13,7 @@
 
 #include "lte/gateway/c/sctpd/src/sctpd.h"
 
+// #include <lte/protos/mconfig/mconfigs.pb.h>
 #include <memory>
 #include <grpcpp/grpcpp.h>
 #include <signal.h>
@@ -22,6 +23,7 @@
 #include "lte/gateway/c/sctpd/src/sctpd_uplink_client.h"
 #include "lte/gateway/c/sctpd/src/util.h"
 #include "orc8r/gateway/c/common/logging/magma_logging_init.h"
+#include "includes/SentryWrapper.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -75,11 +77,38 @@ int signalHandler(int* end, std::unique_ptr<Server>& server,
   return 0;
 }
 
+// static magma::mconfig::SessionD get_default_mconfig() {
+//   magma::mconfig::SessionD mconfig;
+//   mconfig.set_log_level(magma::orc8r::LogLevel::INFO);
+//   mconfig.set_gx_gy_relay_enabled(false);
+//   auto wallet_config = mconfig.mutable_wallet_exhaust_detection();
+//   wallet_config->set_terminate_on_exhaust(false);
+//   return mconfig;
+// }
+
+// static magma::mconfig::SessionD load_mconfig() {
+//   magma::mconfig::SessionD mconfig;
+//   if (!magma::load_service_mconfig_from_file(SESSIOND_SERVICE, &mconfig)) {
+//     MLOG(MERROR) << "Unable to load mconfig for SessionD, using default";
+//     return get_default_mconfig();
+//   }
+//   return mconfig;
+// }
+
 int main() {
   signalMask();
 
   magma::init_logging("sctpd");
   magma::set_verbosity(MDEBUG);
+
+  // auto mconfig = load_mconfig();
+
+  sentry_config_t sentry_config;
+  sentry_config.sample_rate = 1;
+  strncpy(sentry_config.url_native,
+          "https://...hardcoded...",
+          MAX_URL_LENGTH);
+  initialize_sentry("SCTPd", &sentry_config);
 
   auto channel =
       grpc::CreateChannel(UPSTREAM_SOCK, grpc::InsecureChannelCredentials());

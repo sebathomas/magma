@@ -24,6 +24,7 @@ cc_binary(
         ":config",
         ":sctpd_downlink_impl",
         ":sctpd_event_handler",
+        "//orc8r/gateway/c/common/sentry:sentry_wrapper",
     ],
 )
 
