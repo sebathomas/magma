@@ -142,6 +142,12 @@ void initialize_sentry(const char* service_tag,
   }
   sentry_set_tag(SERVICE_NAME, service_tag);
   sentry_set_tag(HWID, get_snowflake().c_str());
+
+  sentry_capture_event(sentry_value_new_message_event(
+    /*   level */ SENTRY_LEVEL_INFO,
+    /*  logger */ "custom",
+    /* message */ "It works!"
+  ));
 }
 
 void shutdown_sentry(void) { sentry_shutdown(); }

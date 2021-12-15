@@ -13,10 +13,12 @@
 
 #include "lte/gateway/c/sctpd/src/sctpd.h"
 
-// #include <lte/protos/mconfig/mconfigs.pb.h>
+#include <lte/protos/mconfig/mconfigs.pb.h>
+#include <exception>
 #include <memory>
 #include <grpcpp/grpcpp.h>
 #include <signal.h>
+#include <iostream>
 
 #include "lte/gateway/c/sctpd/src/sctpd_downlink_impl.h"
 #include "lte/gateway/c/sctpd/src/sctpd_event_handler.h"
@@ -24,6 +26,7 @@
 #include "lte/gateway/c/sctpd/src/util.h"
 #include "orc8r/gateway/c/common/logging/magma_logging_init.h"
 #include "includes/SentryWrapper.h"
+#include "includes/MConfigLoader.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -86,29 +89,39 @@ int signalHandler(int* end, std::unique_ptr<Server>& server,
 //   return mconfig;
 // }
 
-// static magma::mconfig::SessionD load_mconfig() {
-//   magma::mconfig::SessionD mconfig;
-//   if (!magma::load_service_mconfig_from_file(SESSIOND_SERVICE, &mconfig)) {
-//     MLOG(MERROR) << "Unable to load mconfig for SessionD, using default";
-//     return get_default_mconfig();
-//   }
-//   return mconfig;
-// }
+static magma::mconfig::SessionD load_mconfig() {
+  magma::mconfig::SessionD mconfig;
+  if (!magma::load_service_mconfig_from_file("sessiond", &mconfig)) {
+    std::cout << "Unable to load mconfig for SessionD, using default" << std::endl;
+    throw std::exception();
+  }
+  return mconfig;
+}
 
 int main() {
   signalMask();
 
   magma::init_logging("sctpd");
   magma::set_verbosity(MDEBUG);
+  std::cout << "Starting" << std::endl;
 
-  // auto mconfig = load_mconfig();
+  auto mconfig = load_mconfig();
+
+  std::cout << "Done mconfig" << std::endl;
+
+
+  std::cout << mconfig.sentry_config().dsn_native().c_str() << std::endl;
+  std::cout << mconfig.sentry_config().sample_rate() << std::endl;
 
   sentry_config_t sentry_config;
-  sentry_config.sample_rate = 1;
+  sentry_config.sample_rate = mconfig.sentry_config().sample_rate();
   strncpy(sentry_config.url_native,
-          "https://...hardcoded...",
-          MAX_URL_LENGTH);
+          mconfig.sentry_config().dsn_native().c_str(), MAX_URL_LENGTH);
   initialize_sentry("SCTPd", &sentry_config);
+
+  std::cout << "Done Sentry" << std::endl;
+
+  //throw std::exception();
 
   auto channel =
       grpc::CreateChannel(UPSTREAM_SOCK, grpc::InsecureChannelCredentials());
