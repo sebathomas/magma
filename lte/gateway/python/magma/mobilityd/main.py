@@ -30,8 +30,34 @@ from magma.mobilityd.ipv6_allocator_pool import IPv6AllocatorPool
 from magma.mobilityd.mobility_store import MobilityStore
 from magma.mobilityd.rpc_servicer import MobilityServiceRpcServicer
 
+from opentelemetry import trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer, GrpcInstrumentorClient
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SimpleSpanProcessor
+
+from orc8r.protos.common_pb2 import Void
+
 DEFAULT_IPV6_PREFIX_ALLOC_MODE = 'RANDOM'
 RETRY_LIMIT = 300
+
+# Connect to Jaeger
+trace.set_tracer_provider(
+    TracerProvider(
+        resource=Resource.create({SERVICE_NAME: "mobilityd"})
+    )
+)
+jaeger_exporter = JaegerExporter(
+    agent_host_name="192.168.60.1",  # Host IP address
+    agent_port=6831,
+)
+trace.get_tracer_provider().add_span_processor(
+    SimpleSpanProcessor(jaeger_exporter)
+)
+GrpcInstrumentorServer().instrument()
+instrumentor = GrpcInstrumentorClient().instrument()
+tracer = trace.get_tracer(__name__)
 
 
 def _get_ipv4_allocator(
@@ -163,6 +189,13 @@ def main():
     dhcp_iface = config.get('dhcp_iface', 'dhcp0')
     dhcp_retry_limit = config.get('retry_limit', RETRY_LIMIT)
     ipv6_prefixlen = config.get('ipv6_prefixlen', None)
+
+    fakechan = ServiceRegistry.get_rpc_channel(
+        'subscriberdb',
+        ServiceRegistry.LOCAL,
+    )
+    stub = SubscriberDBStub(fakechan)
+    stub.ListSubscribers(Void())
 
     # TODO: consider adding gateway mconfig to decide whether to
     # persist to Redis

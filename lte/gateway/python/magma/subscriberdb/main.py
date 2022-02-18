@@ -34,8 +34,33 @@ from magma.subscriberdb.rpc_servicer import (
 from magma.subscriberdb.store.sqlite import SqliteStore
 from magma.subscriberdb.subscription_profile import get_default_sub_profile
 
+from opentelemetry import trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer
+from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
 
 def main():
+
+    # Connect to Jaeger
+    trace.set_tracer_provider(
+        TracerProvider(
+            resource=Resource.create({SERVICE_NAME: "subscriberdb"})
+        )
+    )
+    jaeger_exporter = JaegerExporter(
+        agent_host_name="192.168.60.1",  # Host IP address
+        agent_port=6831,
+    )
+    trace.get_tracer_provider().add_span_processor(
+        BatchSpanProcessor(jaeger_exporter)
+    )
+    grpc_server_instrumentor = GrpcInstrumentorServer()
+    grpc_server_instrumentor.instrument()
+    tracer = trace.get_tracer(__name__)
+
     """Main routine for subscriberdb service."""  # noqa: D401
     service = MagmaService('subscriberdb', mconfigs_pb2.SubscriberDB())
 

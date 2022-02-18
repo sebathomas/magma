@@ -16,3 +16,5 @@ redis_port: 6380
 print_grpc_payload: false
 
 ipv6_prefixlen: 58
+
+static_ip: true

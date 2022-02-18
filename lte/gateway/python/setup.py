@@ -131,6 +131,23 @@ setup(
         'ovs>=2.13',
         'prometheus-client>=0.3.1',
         'aioeventlet==0.5.1',  # aioeventlet-build.sh
+        # Jaeger PoC
+        'Deprecated==1.2.13',
+        'googleapis-common-protos==1.54.0',
+        'grpcio==1.43.0',
+        'grpcio-tools==1.43.0',
+        'opentelemetry-api==1.9.1',
+        'opentelemetry-exporter-jaeger==1.9.1',
+        'opentelemetry-exporter-jaeger-proto-grpc==1.9.1',
+        'opentelemetry-exporter-jaeger-thrift==1.9.1',
+        'opentelemetry-instrumentation==0.28b1',
+        'opentelemetry-instrumentation-grpc==0.28b1',
+        'opentelemetry-sdk==1.9.1',
+        'opentelemetry-semantic-conventions==0.28b1',
+        'protobuf==3.19.4',
+        'thrift==0.15.0',
+        'typing-extensions==4.1.1',
+        'wrapt==1.13.3',
     ],
     extras_require={
         'dev': [
