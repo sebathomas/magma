@@ -6,7 +6,6 @@ TOOL_DEPS:= \
 	github.com/ory/go-acc \
 	github.com/vektra/mockery/cmd/mockery \
 	github.com/wadey/gocovmerge \
-	gotest.tools/gotestsum \
 	golang.org/x/tools/cmd/goimports
 
 include $(MAGMA_ROOT)/orc8r/cloud/go/module.mk
