@@ -25,4 +25,5 @@ import (
 	_ "github.com/ory/go-acc"
 	_ "github.com/vektra/mockery/cmd/mockery"
 	_ "github.com/wadey/gocovmerge"
+	_ "gotest.tools/gotestsum"
 )
