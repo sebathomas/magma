@@ -116,7 +116,7 @@ func Test_CreateReleaseChannel(t *testing.T) {
 		Payload:        tests.JSONMarshaler(&models.ReleaseChannel{ID: "", SupportedVersions: []string{"1-2-3-4"}}),
 		Handler:        createChannel,
 		ExpectedStatus: 400,
-		ExpectedError:  "validation failure list:\nid in body should be at least 1 chars long",
+		ExpectedError:  "validation failure list:\nid in body is required",
 	}
 	tests.RunUnitTest(t, e, tc)
 }
@@ -254,7 +254,7 @@ func Test_Tiers(t *testing.T) {
 			"gateways in body is required\n" +
 			"id in body should match '^[a-z][\\da-z_]+$'\n" +
 			"images in body is required\n" +
-			"version in body should be at least 1 chars long",
+			"version in body is required",
 	}
 	tests.RunUnitTest(t, e, tc)
 
@@ -269,7 +269,7 @@ func Test_Tiers(t *testing.T) {
 		URL:            tiersRoot,
 		Handler:        createTier,
 		ExpectedStatus: 500,
-		ExpectedError:  "could not find entities matching [type:\"magmad_gateway\" key:\"g1\" ]",
+		ExpectedError:  "could not find entities matching [type:\"magmad_gateway\" key:\"g1\"]",
 	}
 	tests.RunUnitTest(t, e, tc)
 
@@ -739,7 +739,7 @@ func TestPartialTierUpdates(t *testing.T) {
 		ParamNames:     []string{"network_id", "tier_id"},
 		ParamValues:    []string{"n1", "tier1"},
 		ExpectedStatus: 500,
-		ExpectedError:  "could not find entities matching [type:\"magmad_gateway\" key:\"g4\" ]",
+		ExpectedError:  "could not find entities matching [type:\"magmad_gateway\" key:\"g4\"]",
 	}
 	tests.RunUnitTest(t, e, tc)
 
