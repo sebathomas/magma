@@ -1,8 +1,11 @@
 module magma/feg/cloud/go/protos
 
+go 1.17
+
 require (
-	github.com/golang/protobuf v1.3.3
+	github.com/golang/protobuf v1.5.0
 	google.golang.org/grpc v1.27.1
+	google.golang.org/protobuf v1.27.1
 )
 
 require (
@@ -11,5 +14,3 @@ require (
 	golang.org/x/text v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
 )
-
-go 1.17

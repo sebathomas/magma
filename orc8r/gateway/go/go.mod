@@ -1,5 +1,7 @@
 module magma/gateway
 
+go 1.17
+
 replace (
 	magma/orc8r/lib/go => ../../../orc8r/lib/go
 	magma/orc8r/lib/go/protos => ../../../orc8r/lib/go/protos
@@ -48,5 +50,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
-
-go 1.17
