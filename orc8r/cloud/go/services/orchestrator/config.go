@@ -24,3 +24,39 @@ type Config struct {
 	PrometheusPushAddresses   []string                     `yaml:"prometheusPushAddresses"`
 	Analytics                 calculations.AnalyticsConfig `yaml:"analytics"`
 }
+
+type ViperConfig struct {
+	UseGRPCExporter           bool                 `mapstructure:"useGRPCExporter"`
+	PrometheusGRPCPushAddress string               `mapstructure:"prometheusGRPCPushAddress"`
+	PrometheusPushAddresses   []string             `mapstructure:"prometheusPushAddresses"`
+	Analytics                 ViperAnalyticsConfig `mapstructure:"analytics"`
+}
+
+// AnalyticsConfig represents the configuration provided to the components
+// implementing analytics collector service.
+type ViperAnalyticsConfig struct {
+	// MinUserThreshold sets the value below which aggregated user metrics
+	// shouldn't be exported.
+	MinUserThreshold int                          `mapstructure:"minUserThreshold"`
+	Metrics          map[string]ViperMetricConfig `mapstructure:"metrics"`
+}
+
+type ViperMetricConfig struct {
+	Register                bool              `mapstructure:"register"`
+	Export                  bool              `mapstructure:"export"`
+	Expr                    string            `mapstructure:"expr"`
+	Labels                  map[string]string `mapstructure:"labels"`
+	EnforceMinUserThreshold bool              `mapstructure:"enforceMinUserThreshold"`
+	LogConfig               *ViperLogConfig   `mapstructure:"logConfig"`
+}
+
+type ViperLogConfig struct {
+	// key value pair to perform Term search on elastic
+	Tags map[string]string `mapstructure:"tags"`
+
+	// Custom fields to match the query on
+	Fields []string `mapstructure:"fields"`
+
+	// Query specifies the actual query string
+	Query string `mapstructure:"query"`
+}

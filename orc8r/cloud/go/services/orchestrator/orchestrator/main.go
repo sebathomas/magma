@@ -14,7 +14,10 @@
 package main
 
 import (
+	"encoding/json"
+
 	"github.com/golang/glog"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
 	"magma/orc8r/cloud/go/obsidian"
@@ -62,6 +65,29 @@ func main() {
 		glog.Infof("err %v failed parsing the config file ", err)
 		return
 	}
+
+	// workaround for https://github.com/spf13/viper/issues/324
+	v := viper.NewWithOptions(viper.KeyDelimiter(":~~~:"))
+	v.SetConfigName("orchestrator.yml")
+	v.SetConfigType("yaml")
+	v.AddConfigPath("/etc/magma/configs/orc8r/")
+	v.AddConfigPath("/etc/magma/configs")
+	v.AddConfigPath("/etc/magma")
+	v.AddConfigPath("/var/opt/magma/configs")
+
+	if err := v.ReadInConfig(); err != nil {
+		glog.Errorf("err %v failed parsing the config file ", err)
+		return
+	}
+	var viperConfig orchestrator.ViperConfig
+	if err := v.Unmarshal(&viperConfig); err != nil {
+		glog.Errorf("err %v failed unmarshalling the config file ", err)
+		return
+	}
+	viperJson, _ := json.MarshalIndent(viperConfig, "", "\t")
+	serviceJson, _ := json.MarshalIndent(serviceConfig, "", "\t")
+	glog.Infof("VIPER: %s\n", viperJson)
+	glog.Infof("OLD: %s\n", serviceJson)
 
 	if serviceConfig.UseGRPCExporter {
 		grpcAddress := serviceConfig.PrometheusGRPCPushAddress
