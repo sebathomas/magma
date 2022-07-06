@@ -19,8 +19,10 @@
   vars:
     magma_root: /home/{{ ansible_user }}/magma
     user: "{{ ansible_user }}"
-    preburn: false
-    full_provision: true
+    preburn: true
+    full_provision: false
+#    preburn: false
+#    full_provision: true
 
   roles:
     - role: gateway_dev
