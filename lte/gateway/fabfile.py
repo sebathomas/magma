@@ -777,6 +777,8 @@ def _start_gateway():
     with cd(AGW_ROOT):
         run('make run')
 
+    run('sudo iptables -P FORWARD ACCEPT')
+
 
 def _restart_gateway():
     """ Restart the gateway """
