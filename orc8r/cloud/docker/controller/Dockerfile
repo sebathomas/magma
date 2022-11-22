@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
   unzip \
   vim
 
-# Golang 
+# Golang
 WORKDIR /usr/local
 ARG GOLANG_VERSION="1.19.3"
 RUN GO_TARBALL="go${GOLANG_VERSION}.linux-amd64.tar.gz" \
@@ -88,9 +88,11 @@ RUN . /etc/profile.d/env.sh && make build
 # ------------------------------------------------------------------------------
 # Production
 # ------------------------------------------------------------------------------
-FROM ubuntu:xenial
+FROM ubuntu:focal
 
 # Apt runtime deps
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TZ=UTC
 RUN apt-get update && apt-get install -y \
   daemontools \
   netcat \
@@ -126,7 +128,7 @@ COPY --from=builder /build/bin /var/opt/magma/bin
 # Supervisor configs
 ARG CNTLR_FILES=src/magma/orc8r/cloud/docker/controller
 COPY ${CNTLR_FILES}/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY ${CNTLR_FILES}/supervisor_logger.py /usr/local/lib/python2.7/dist-packages/supervisor_logger.py
+COPY ${CNTLR_FILES}/supervisor_logger.py /usr/local/lib/python3.8/dist-packages/supervisor_logger.py
 
 # Scripts for dev mode
 COPY ${CNTLR_FILES}/create_test_controller_certs /usr/local/bin/create_test_controller_certs
