@@ -980,7 +980,7 @@
           "root": false,
           "source": "apt",
           "sysdep": "python3-requests",
-          "version": "2.28.1"
+          "version": "2.22.0"
         },
         "rfc3987": {
           "root": true,
@@ -1022,7 +1022,7 @@
           "root": false,
           "source": "apt",
           "sysdep": "python3-six",
-          "version": "1.16.0"
+          "version": "1.14.0"
         },
         "snowflake": {
           "root": true,
@@ -1086,9 +1086,9 @@
         },
         "websocket-client": {
           "root": false,
-          "source": "apt",
+          "source": "pypi",
           "sysdep": "python3-websocket-client",
-          "version": "1.3.3"
+          "version": "1.4.2"
         },
         "werkzeug": {
           "root": false,
