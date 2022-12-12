@@ -139,7 +139,7 @@ class MobilityServiceGrpc(MobilityServiceClient):
             else:
                 raise
 
-    def remove_ip_blocks(self, blocks):
+    def remove_ip_blocks(self, blocks, force):
         try:
             ip_blocks = [
                 IPBlock(
@@ -153,7 +153,7 @@ class MobilityServiceGrpc(MobilityServiceClient):
                 for block in blocks
             ]
             response = self._mobility_stub.RemoveIPBlock(
-                RemoveIPBlockRequest(ip_blocks=ip_blocks, force=False),
+                RemoveIPBlockRequest(ip_blocks=ip_blocks, force=force),
             )
             removed_ip_block_list = ()
             for block in response.ip_blocks:
@@ -187,7 +187,7 @@ class MobilityServiceGrpc(MobilityServiceClient):
 
     def remove_all_ip_blocks(self):
         blocks = self.list_added_blocks()
-        self.remove_ip_blocks(blocks)
+        self.remove_ip_blocks(blocks, True)
 
     def wait_for_changes(self):
         """ All changes propagate immediately, no need to wait """
