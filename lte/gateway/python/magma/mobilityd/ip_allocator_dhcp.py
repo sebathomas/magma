@@ -438,7 +438,7 @@ class IPAllocatorDHCP(IPAllocator):
         dhcp_desc = self.get_dhcp_desc_from_store(mac, vlan)
         logging.info(f"Releasing dhcp desc: {dhcp_desc}")
         if dhcp_desc:
-            dhcp_cli_response = subprocess.run(
+            subprocess.Popen(
                 [
                     DHCP_HELPER_CLI_PATH,
                     "--mac", str(mac),
@@ -448,23 +448,7 @@ class IPAllocatorDHCP(IPAllocator):
                     "--ip", str(ip_desc.ip),
                     "--server-ip", str(dhcp_desc.server_ip),
                 ],
-                capture_output=True,
             )
-
-            if dhcp_cli_response.returncode != 0:
-                logging.error(
-                    f"Could not decode '{dhcp_cli_response.stdout}'"
-                    f" received '{dhcp_cli_response.stderr}' from "
-                    f"'{DHCP_HELPER_CLI_PATH}' called with parameters"
-                    f" '{dhcp_cli_response.args}'",
-                )
-                print(
-                    f"Could not decode '{dhcp_cli_response.stdout}'"
-                    f" received '{dhcp_cli_response.stderr}' from "
-                    f"'{DHCP_HELPER_CLI_PATH}' called with parameters"
-                    f" '{dhcp_cli_response.args}'",
-                )
-                raise NoAvailableIPError(f'Failed to call dhcp_helper_cli.')
 
             key = mac.as_redis_key(vlan)
             with self.dhcp_wait:
